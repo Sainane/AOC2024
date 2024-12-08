@@ -15,7 +15,7 @@ var directions = []direction{{1, 0}, {0, 1}, {1, 1}, {-1, 1}}
 
 func main() {
 	count := 0
-	data, err := os.ReadFile("input")
+	data, err := os.ReadFile("src/day_04/input")
 	if err != nil {
 		fmt.Println("Error reading input:", err)
 		return
@@ -24,7 +24,7 @@ func main() {
 	lines := strings.Split(string(data), "\n")
 	for _, dir := range directions {
 		for i, line := range lines {
-			for j, _ := range line {
+			for j := range line {
 				if hasWord(lines, dir, i, j, "XMAS") {
 					count++
 				}
@@ -32,8 +32,8 @@ func main() {
 		}
 
 	}
-	fmt.Println(count)
-	fmt.Println(part2(lines))
+	fmt.Println("Part 1 :", count)
+	fmt.Println("Part 2 :", part2(lines))
 }
 
 func part2(lines []string) int {
@@ -41,7 +41,7 @@ func part2(lines []string) int {
 	dirFirst := direction{1, 1}
 	dirSecond := direction{1, -1}
 	for i, line := range lines {
-		for j, _ := range line {
+		for j := range line {
 			if hasWord(lines, dirFirst, i, j, "MAS") {
 				if j+2 < len(line) {
 					if hasWord(lines, dirSecond, i, j+2, "MAS") {

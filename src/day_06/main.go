@@ -93,7 +93,7 @@ func copyGrid(grid [][]byte) [][]byte {
 }
 
 func main() {
-	file, err := os.Open("input")
+	file, err := os.Open("src/day_06/input")
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return

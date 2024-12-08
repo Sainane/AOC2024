@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	data, err := os.ReadFile("input")
+	data, err := os.ReadFile("src/day_02/input")
 	if err != nil {
 		fmt.Println("Error reading input:", err)
 		return
@@ -28,8 +28,8 @@ func main() {
 
 	}
 
-	fmt.Println(part1(values))
-	fmt.Println(part2(values))
+	fmt.Println("Part 1 :", part1(values))
+	fmt.Println("Part 2 :", part2(values))
 }
 
 func checkValidity(num []int) bool {

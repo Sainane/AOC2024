@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type Equation struct {
@@ -14,7 +15,7 @@ type Equation struct {
 }
 
 func main() {
-	data, err := os.ReadFile("input")
+	data, err := os.ReadFile("src/day_07/input")
 	if err != nil {
 		fmt.Println("Error reading input:", err)
 		return
@@ -36,25 +37,39 @@ func main() {
 		equations = append(equations, eq)
 	}
 
-	sol := 0
-	for _, e := range equations {
-		// remove or for part1
-		ops := allOpPoss(len(e.numbers)-1, []func(a int, b int) int{plus, times, or})
-		for _, op := range ops {
-			res := e.numbers[0]
-			for i, o := range op {
-				res = o(res, e.numbers[i+1])
-			}
-			if res == e.result {
-				sol += e.result
-				break
-
-			}
-		}
-	}
-	fmt.Print(sol)
-
+	fmt.Println("Part 1 : ", solutionsForOp(equations, []func(a int, b int) int{plus, times}))
+	fmt.Println("Part 2 : ", solutionsForOp(equations, []func(a int, b int) int{plus, times, or}))
 }
+
+func solutionsForOp(equations []Equation, ops_ []func(a int, b int) int) int {
+	var wg sync.WaitGroup
+	mu := sync.Mutex{}
+	sol := 0
+
+	for _, e := range equations {
+		wg.Add(1)
+		go func(e Equation) {
+			defer wg.Done()
+			ops := allOpPoss(len(e.numbers)-1, ops_)
+			for _, op := range ops {
+				res := e.numbers[0]
+				for i, o := range op {
+					res = o(res, e.numbers[i+1])
+				}
+				if res == e.result {
+					mu.Lock()
+					sol += e.result
+					mu.Unlock()
+					break
+				}
+			}
+		}(e)
+	}
+
+	wg.Wait()
+	return sol
+}
+
 func plus(a int, b int) int {
 	return a + b
 }
@@ -73,19 +88,17 @@ func allOpPoss(nbOp int, posOp []func(a int, b int) int) [][]func(a int, b int) 
 	generateOperatorCombinations(make([]func(a int, b int) int, nbOp), 0, &combinations, posOp)
 	return combinations
 }
+
 func generateOperatorCombinations(operators []func(a int, b int) int, index int, combinations *[][]func(a int, b int) int, posOp []func(a int, b int) int) {
 	if index == len(operators) {
 		opCopy := make([]func(a int, b int) int, len(operators))
 		copy(opCopy, operators)
-
 		*combinations = append(*combinations, opCopy)
 		return
 	}
 
-	// recursive call for all possible operators
 	for _, op := range posOp {
 		operators[index] = op
 		generateOperatorCombinations(operators, index+1, combinations, posOp)
 	}
-
 }

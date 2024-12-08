@@ -18,7 +18,12 @@ func parseInput(filename string) ([]Rule, [][]int, []string) {
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+
+		}
+	}(file)
 	var rule []string
 	var rules []Rule
 	var updates [][]int
@@ -74,29 +79,19 @@ func isValidOrder(update []int, rules []Rule) bool {
 }
 
 func main() {
-	rules, updates, _ := parseInput("input")
-
-	// Debug output
-	fmt.Println("Rules:")
-	for _, r := range rules {
-		fmt.Printf("%d must come before %d\n", r.before, r.after)
-	}
+	rules, updates, _ := parseInput("src/day_05/input")
 
 	sum := 0
-	fmt.Println("\nChecking updates:")
-	for i, update := range updates {
+	for _, update := range updates {
 		valid := isValidOrder(update, rules)
 		if valid {
 			middleIdx := len(update) / 2
 			middleNum := update[middleIdx]
 			sum += middleNum
-			fmt.Printf("Update %d: %v is valid. Middle number: %d\n", i+1, update, middleNum)
-		} else {
-			fmt.Printf("Update %d: %v is invalid\n", i+1, update)
 		}
 	}
 
-	fmt.Printf("\nFinal sum of middle numbers: %d\n", sum)
+	fmt.Println("Part 1 :", sum)
 	part2()
 }
 
@@ -116,28 +111,6 @@ func (o ordering) Less(other ordering) bool {
 	return false
 }
 
-type toOrder []ordering
-
-func (o toOrder) Len() int {
-	return len(o)
-}
-
-func (o toOrder) Less(i, j int) bool {
-	return o[i].Less(o[j])
-}
-
-func (o toOrder) Swap(i, j int) {
-	temp := o[i]
-	o[i] = o[j]
-	o[j] = temp
-}
-
-// Utility function to convert string to int
-func atoi(s string) int {
-	n, _ := strconv.Atoi(s)
-	return n
-}
-
 // Parse the rules into a map: page -> set of pages that must come after this page
 func parseRules(rules []string) map[int]map[int]bool {
 	ordering := make(map[int]map[int]bool)
@@ -146,8 +119,8 @@ func parseRules(rules []string) map[int]map[int]bool {
 		if len(parts) != 2 {
 			continue
 		}
-		before := atoi(parts[0])
-		after := atoi(parts[1])
+		before, _ := strconv.Atoi(parts[0])
+		after, _ := strconv.Atoi(parts[1])
 
 		if _, exists := ordering[before]; !exists {
 			ordering[before] = make(map[int]bool)
@@ -161,7 +134,7 @@ func reorderUpdate(update []int, ordering map[int]map[int]bool) []int {
 	indegree := make(map[int]int)
 	graph := make(map[int][]int)
 
-	// Create graph and compute indegrees
+	// Create graph and compute degrees
 	for _, page := range update {
 		indegree[page] = 0
 		graph[page] = []int{}
@@ -180,14 +153,14 @@ func reorderUpdate(update []int, ordering map[int]map[int]bool) []int {
 		}
 	}
 
-	queue := []int{}
+	var queue []int
 	for page, deg := range indegree {
 		if deg == 0 {
 			queue = append(queue, page)
 		}
 	}
 
-	sorted := []int{}
+	var sorted []int
 	for len(queue) > 0 {
 		page := queue[0]
 		queue = queue[1:]
@@ -212,7 +185,7 @@ func middlePage(update []int) int {
 
 func part2() {
 
-	_, updates, rules := parseInput("input")
+	_, updates, rules := parseInput("src/day_05/input")
 	ordering := parseRules(rules)
 	incorrectMiddleSum := 0
 
@@ -223,7 +196,7 @@ func part2() {
 		}
 	}
 
-	fmt.Println("The sum of middle pages of correctly ordered (fixed) updates is:", incorrectMiddleSum)
+	fmt.Println("Part 2 :", incorrectMiddleSum)
 }
 
 // Check if an update is in the correct order

@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	data, err := os.ReadFile("input")
+	data, err := os.ReadFile("src/day_01/input")
 	if err != nil {
 		fmt.Println("Error reading input:", err)
 		return
@@ -29,8 +29,8 @@ func main() {
 		col2 = append(col2, val2)
 	}
 
-	fmt.Println(part1(col1, col2))
-	fmt.Println(part2(col1, col2))
+	fmt.Println("Part 1 :", part1(col1, col2))
+	fmt.Println("Part 2 :", part2(col1, col2))
 
 }
 

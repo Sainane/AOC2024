@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	corruptedMemory, err := os.ReadFile("input")
+	corruptedMemory, err := os.ReadFile("src/day_03/input")
 
 	if err != nil {
 		fmt.Println("Error reading input:", err)
@@ -28,8 +28,8 @@ func main() {
 		totalSum += x * y
 	}
 
-	fmt.Println("Sum of all valid mul instructions:", totalSum)
-	fmt.Println("Sum of all valid mul instructions part 2:", part2(string(corruptedMemory)))
+	fmt.Println("Part 1 :", totalSum)
+	fmt.Println("Part 2 :", part2(string(corruptedMemory)))
 }
 
 func part2(corruptedMemory string) int {
@@ -56,7 +56,7 @@ func part2(corruptedMemory string) int {
 			}
 
 			pos += mulMatch[1]
-		} else if stateMatch != nil {
+		} else {
 			stateInstruction := corruptedMemory[pos+stateMatch[0] : pos+stateMatch[1]]
 			if stateInstruction == "do()" {
 				enabled = true

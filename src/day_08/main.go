@@ -12,13 +12,14 @@ type position struct {
 }
 
 func main() {
-	data, err := os.ReadFile("input")
+	data, err := os.ReadFile("src/day_08/input")
 	if err != nil {
 		fmt.Println("Error reading input:", err)
 		return
 	}
 
 	lines := strings.Split(string(data), "\n")
+
 	map_ := initializeMap(lines)
 	antenna := extractAntennaPositions(lines)
 
